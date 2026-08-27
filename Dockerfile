@@ -10,15 +10,16 @@ RUN apk add --no-cache \
  libffi-dev \
  openssl-dev
 WORKDIR /home/node
-# 创建虚拟环境目录
-RUN mkdir -p /home/node/.venv && \
- python3 -m venv /home/node/.venv
+# 使用 root 创建虚拟环境
+RUN python3 -m venv /home/node/.venv && \
+ chmod -R 755 /home/node/.venv
 ENV PATH="/home/node/.venv/bin:$PATH"
+ENV PYTHONPATH="/home/node/.venv/lib/python3.*/site-packages:$PYTHONPATH"
 # 升级 pip
 RUN /home/node/.venv/bin/pip install --upgrade pip
 # 安装 n8n
 RUN npm install -g n8n
-# 创建数据目录
+# 创建数据目录并设置权限
 RUN mkdir -p /home/node/.n8n && \
  chown -R node:node /home/node
 USER node
